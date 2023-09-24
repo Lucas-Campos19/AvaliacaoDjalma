@@ -14,6 +14,8 @@ namespace AvaliacaoDjalma.Context
 
         public DbSet<Produto> Produtos { get; set; }
 
+        public DbSet<AvaliacaoDjalma.Models.Marca> Marca { get; set; }
+
         //public DbSet<Marca> Marcas { get; set; }
 
 
