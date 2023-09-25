@@ -1,5 +1,6 @@
 ﻿using AvaliacaoDjalma.Context;
 using AvaliacaoDjalma.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,8 +21,10 @@ public class Startup
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-        
-        
+
+        services.AddIdentity<IdentityUser, IdentityRole>()
+        .AddEntityFrameworkStores<AppDbContext>()
+        .AddDefaultTokenProviders();
 
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
        

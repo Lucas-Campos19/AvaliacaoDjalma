@@ -4,6 +4,7 @@ using AvaliacaoDjalma.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AvaliacaoDjalma.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230924153406_MigracaoUltima")]
+    partial class MigracaoUltima
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,64 +24,6 @@ namespace AvaliacaoDjalma.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AvaliacaoDjalma.Models.ApplicationUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserNameId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserPass")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("AplicationsUsers");
-                });
 
             modelBuilder.Entity("AvaliacaoDjalma.Models.Cliente", b =>
                 {
@@ -127,6 +72,24 @@ namespace AvaliacaoDjalma.Migrations
                     b.ToTable("Marca");
                 });
 
+            modelBuilder.Entity("AvaliacaoDjalma.Models.Pedido", b =>
+                {
+                    b.Property<int>("PedidoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PedidoId"));
+
+                    b.Property<int>("ClienteId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PedidoId");
+
+                    b.HasIndex("ClienteId");
+
+                    b.ToTable("Pedidos");
+                });
+
             modelBuilder.Entity("AvaliacaoDjalma.Models.Produto", b =>
                 {
                     b.Property<int>("ProdutoId")
@@ -146,9 +109,14 @@ namespace AvaliacaoDjalma.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PedidoId")
+                        .HasColumnType("int");
+
                     b.HasKey("ProdutoId");
 
                     b.HasIndex("MarcaId");
+
+                    b.HasIndex("PedidoId");
 
                     b.ToTable("Produtos");
                 });
@@ -193,6 +161,17 @@ namespace AvaliacaoDjalma.Migrations
                     b.Navigation("Usuario");
                 });
 
+            modelBuilder.Entity("AvaliacaoDjalma.Models.Pedido", b =>
+                {
+                    b.HasOne("AvaliacaoDjalma.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cliente");
+                });
+
             modelBuilder.Entity("AvaliacaoDjalma.Models.Produto", b =>
                 {
                     b.HasOne("AvaliacaoDjalma.Models.Marca", "Marca")
@@ -201,10 +180,19 @@ namespace AvaliacaoDjalma.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AvaliacaoDjalma.Models.Pedido", null)
+                        .WithMany("Produtos")
+                        .HasForeignKey("PedidoId");
+
                     b.Navigation("Marca");
                 });
 
             modelBuilder.Entity("AvaliacaoDjalma.Models.Marca", b =>
+                {
+                    b.Navigation("Produtos");
+                });
+
+            modelBuilder.Entity("AvaliacaoDjalma.Models.Pedido", b =>
                 {
                     b.Navigation("Produtos");
                 });
